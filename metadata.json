@@ -1,0 +1,7 @@
+{
+  "name": "CarbonLens - Nền tảng Phân tích Phát thải & Tín chỉ Carbon Rừng Cần Giờ",
+  "description": "Nền tảng phân tích phát thải doanh nghiệp (Scope 1 & 2), giám sát sinh khối Blue Carbon Cần Giờ và sàn giao dịch tín chỉ mô phỏng.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+

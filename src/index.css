@@ -1,0 +1,28 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: dark;
+}
+
+html, body {
+  background-color: #020617;
+  color: #f8fafc;
+  color-scheme: dark;
+}
+
+/* Enforce dark theme backgrounds for form controls across all browsers */
+input, select, textarea {
+  color-scheme: dark;
+  background-color: #020617;
+  color: #f8fafc;
+  border-color: #334155;
+}
+
+input::placeholder, textarea::placeholder {
+  color: #64748b;
+}
+
+option, optgroup {
+  background-color: #0f172a;
+  color: #f8fafc;
+}
