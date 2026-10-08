@@ -87,10 +87,6 @@ export const LoginGateway: React.FC<LoginGatewayProps> = ({ onLogin }) => {
           <div className="space-y-8">
             {/* Hero Introduction */}
             <div className="text-center max-w-3xl mx-auto space-y-3">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono font-bold bg-emerald-950/80 text-emerald-400 border border-emerald-500/40 shadow-sm">
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>CỔNG ĐĂNG NHẬP PHÂN QUYỀN 4 NHÓM NGƯỜI DÙNG</span>
-              </div>
               <h1 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight">
                 Chọn Vai Trò Để Bắt Đầu Trải Nghiệm Nền Tảng
               </h1>
