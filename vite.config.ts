@@ -12,26 +12,24 @@ export default defineConfig(() => {
         '@': path.resolve(__dirname, '.'),
       },
     },
-    // 🌟 PHƯƠNG PHÁP ĐẶC TRỊ MIỄN DỊCH VỚI LỖI MIME TYPE TRÊN GITHUB PAGES
+    // 🌟 PHƯƠNG PHÁP ĐẶC TRỊ KHÓA LỖI MIME TYPE: ĐÓNG GÓI ĐỊNH DẠNG TÊN FILE TĨNH TIÊU CHUẨN
     build: {
       cssCodeSplit: false,
       chunkSizeWarningLimit: 3000,
+      minify: 'esbuild',
+      assetsInlineLimit: 4096, // Các file nhỏ tự động gộp thẳng vào code để tránh lỗi fetch asset
       rollupOptions: {
         output: {
-          // ĐỔI ĐUÔI CHUẨN SANG .MJS ĐỂ ÉP TRÌNH DUYỆT ĐỌC ĐÚNG THUỘC TÍNH MODULE SCRIPT, TRIỆT TIÊU 100% LỖI ĐEN MÀN HÌNH
-          entryFileNames: 'assets/[name].mjs',
-          chunkFileNames: 'assets/[name].mjs',
+          // Ép xuất file đuôi .js truyền thống nhưng loại bỏ các ký tự băm [hash] kẹt cache CDN
+          entryFileNames: 'assets/main.js',
+          chunkFileNames: 'assets/[name].js',
           assetFileNames: 'assets/[name].[ext]'
         }
       }
     },
     server: {
-      // HMR is disabled in AI Studio via DISABLE_HMR env var.
-      // Do not modify—file watching is disabled to prevent flickering during agent edits.
       hmr: process.env.DISABLE_HMR !== 'true',
-      // Disable file watching when DISABLE_HMR is true to save CPU during agent edits.
       watch: process.env.DISABLE_HMR === 'true' ? null : {},
     },
   };
 });
-
