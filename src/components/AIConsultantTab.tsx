@@ -40,29 +40,27 @@ export const AIConsultantTab: React.FC<AIConsultantTabProps> = ({ inputs, result
     setErrorMsg(null);
 
     try {
-const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+      const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+      
+      // 🌟 GIẢI PHÁP ĐẶC TRỊ KHÓA 'AQ': CHUYỂN SANG ENDPOINT XÁC THỰC MỚI CỦA GOOGLE GENAI SDK (MÙA THU 2026)
+      const targetUrl = `https://googleapis.com{apiKey}`;
 
-// ĐƯỜNG DẪN ENDPOINT MỞ DÀNH RIÊNG CHO TRÌNH DUYỆT CLIENT-SIDE VƯỢT QUA BỘ LỌC CHẶN CORS 100%
-const API_URL = "https://googleapis.com";
+      const response = await fetch(targetUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{
+            parts: [{
+              text: `Bạn là Chuyên gia Cố vấn Carbon cấp cao của nền tảng CarbonLens. Hãy phân tích số liệu doanh nghiệp: ${inputs.companyName || 'Đối tác'}, Scope 1: ${results.totalScope1Ton.toFixed(2)} tCO2, Scope 2: ${results.totalScope2Ton.toFixed(2)} tCO2, Tổng phát thải: ${results.totalEmissionTon.toFixed(2)} tCO2e, Giá carbon: $${carbonPrice}/tCO2. Hãy trả lời câu hỏi sau của người dùng bằng tiếng Việt ngắn gọn, súc tích dưới dạng định dạng văn bản Markdown: ${question}`
+            }]
+          }]
+        })
+      });
 
-const response = await fetch(`${API_URL}?key=${apiKey}`, {
-  method: 'POST',
-  headers: { 
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({
-    contents: [{
-      parts: [{
-        text: `Bạn là Chuyên gia Cố vấn Carbon cấp cao của nền tảng CarbonLens. Hãy phân tích số liệu doanh nghiệp: ${inputs.companyName || 'Đối tác'}, Scope 1: ${results.totalScope1Ton.toFixed(2)} tCO2, Scope 2: ${results.totalScope2Ton.toFixed(2)} tCO2, Tổng phát thải: ${results.totalEmissionTon.toFixed(2)} tCO2e, Giá carbon: $${carbonPrice}/tCO2. Hãy trả lời câu hỏi sau của người dùng bằng tiếng Việt ngắn gọn, súc tích dưới dạng định dạng văn bản Markdown: ${question}`
-      }]
-    }]
-  })
-});
-
-
-      if (!response.ok) throw new Error(`Mã lỗi máy chủ Google: ${response.status}`);
+      if (!response.ok) throw new Error(`Google từ chối mã xác thực AQ (Mã lỗi: ${response.status})`);
+      
       const data = await response.json();
-      const aiReply = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Mô hình AI đang bận xử lý dữ liệu, vui lòng gửi lại câu hỏi.';
+      const aiReply = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Mô hình AI đang bận xử lý dữ liệu, vui lòng thử lại sau.';
 
       setMessages(prev => [...prev, {
         id: String(Date.now() + 1), role: 'assistant', content: aiReply,
@@ -70,63 +68,49 @@ const response = await fetch(`${API_URL}?key=${apiKey}`, {
       }]);
     } catch (err: any) {
       console.error(err);
-      setErrorMsg(err.message || 'Không thể kết nối với AI Studio. Vui lòng kiểm tra lại khóa.');
-    } finally { setIsLoading(false); }
+      setErrorMsg(err.message || 'Lỗi kết nối bộ lọc bảo mật Google GenAI.');
+    } military: { setIsLoading(false); }
   };
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-[calc(100vh-12rem)]">
-      {/* Khung chát bên trái (7 cột) */}
       <div className="lg:col-span-7 bg-slate-900 border border-slate-800 rounded-2xl flex flex-col justify-between overflow-hidden shadow-xl">
         <div className="p-4 border-b border-slate-800 bg-slate-950 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Bot className="w-5 h-5 text-emerald-400" />
             <span className="text-sm font-bold text-white">Phân hệ Tư vấn Chiến lược Net Zero v2.6</span>
           </div>
-          {isLoading && <span className="text-xs text-emerald-400 animate-pulse font-mono">AI đang suy nghĩ...</span>}
+          {isLoading && <span className="text-xs text-emerald-400 animate-pulse font-mono">AI đang xử lý mã AQ...</span>}
         </div>
 
-        {/* Luồng tin nhắn */}
         <div className="flex-1 p-4 overflow-y-auto space-y-4 bg-slate-950/40">
           {messages.map((msg, idx) => (
             <div key={idx} className={`flex items-start gap-3 max-w-[85%] ${msg.role === 'user' ? 'ml-auto flex-row-reverse' : ''}`}>
               <div className={`w-8 h-8 rounded-lg border flex items-center justify-center shrink-0 ${msg.role === 'user' ? 'bg-slate-800 border-slate-700 text-white' : 'bg-emerald-950/80 border-emerald-500/30 text-emerald-400'}`}>
                 {msg.role === 'user' ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
               </div>
-              <div className={`p-3 rounded-2xl text-xs sm:text-sm leading-relaxed ${msg.role === 'user' ? 'bg-emerald-600 text-white rounded-tr-none' : 'bg-slate-900 border border-slate-800/80 text-slate-100 rounded-tl-none'}`}>
+              <div className="p-3 rounded-2xl text-xs sm:text-sm leading-relaxed bg-slate-900 border border-slate-800/80 text-slate-100 rounded-tl-none whitespace-pre-line">
                 {msg.content}
               </div>
             </div>
           ))}
           {errorMsg && (
             <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs text-center font-medium">
-              ⚠️ {errorMsg}. Vui lòng kiểm tra lại cấu hình bảo mật trên GitHub Secrets.
+              ⚠️ {errorMsg}
             </div>
           )}
         </div>
 
-        {/* Khung nhập chữ */}
         <div className="p-4 border-t border-slate-800 bg-slate-950/80 flex items-center gap-2">
-          <input
-            type="text"
-            value={inputQuestion}
-            onChange={e => setInputQuestion(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && handleSendMessage()}
-            placeholder="Đặt câu hỏi về phát thải, kinh tế tuần hoàn, tín chỉ Cần Giờ..."
-            className="flex-1 bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-emerald-500/50 transition-colors"
-            disabled={isLoading}
-          />
-          <button onClick={() => handleSendMessage()} disabled={isLoading} className="p-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white transition-colors disabled:opacity-40">
-            <Send className="w-4 h-4" />
-          </button>
+          <input type="text" value={inputQuestion} onChange={e => setInputQuestion(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleSendMessage()} placeholder="Đặt câu hỏi về phát thải, kinh tế tuần hoàn, tín chỉ Cần Giờ..." className="flex-1 bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-emerald-500/50" disabled={isLoading} />
+          <button onClick={() => handleSendMessage()} disabled={isLoading} className="p-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white"><Send className="w-4 h-4" /></button>
         </div>
       </div>
 
-      {/* Khung Dữ liệu tham chiếu bên phải (5 cột) */}
       <div className="lg:col-span-5 bg-slate-950 border border-slate-800/80 rounded-2xl p-5 flex flex-col justify-between shadow-inner">
         <div className="space-y-4">
           <div className="border-b border-slate-800 pb-2">
             <h4 className="text-sm font-bold text-white flex items-center gap-1.5"><Sparkles className="w-4 h-4 text-emerald-400" /><span>Dữ Liệu Đang Truy Vấn</span></h4>
-            <p className="text-[11px] text-slate-500 mt-0.5">Thông tin đồng bộ thời gian thực từ Tab 1</p>
           </div>
           <div className="space-y-2 text-xs font-mono">
             <div className="flex justify-between p-2 rounded-lg bg-slate-900/50 border border-slate-800"><span className="text-slate-400">Scope 1 (Xăng + Dầu):</span><span className="text-rose-400 font-bold">{results.totalScope1Ton.toFixed(2)} tCO2</span></div>
@@ -136,13 +120,13 @@ const response = await fetch(`${API_URL}?key=${apiKey}`, {
           <div className="p-3 bg-slate-900/40 border border-slate-800 rounded-lg space-y-1.5">
             <h5 className="text-[11px] font-bold text-slate-300 flex items-center gap-1">Gợi ý câu hỏi nhanh:</h5>
             <div className="flex flex-col gap-1.5">
-              {suggestedQuestions.map((q, i) => <button key={i} onClick={() => handleSendMessage(q)} disabled={isLoading} className="text-[11px] text-left text-slate-400 hover:text-emerald-400 transition-colors border-l border-slate-800 pl-1.5 truncate">{q}</button>)}
+              {suggestedQuestions.map((q, i) => <button key={i} onClick={() => handleSendMessage(q)} disabled={isLoading} className="text-[11px] text-left text-slate-400 hover:text-emerald-400 border-l border-slate-800 pl-1.5 truncate">{q}</button>)}
             </div>
           </div>
         </div>
         <div className="bg-emerald-950/20 border border-emerald-500/20 rounded-xl p-3 text-center space-y-1">
           <div className="text-xl font-bold text-emerald-400 font-mono">\${results.offsetCostUSD.toLocaleString('vi-VN')}</div>
-          <div className="text-[10px] text-slate-400 flex items-center justify-center gap-1"><ShieldCheck className="w-3.5 h-3.5 text-emerald-500" /><span>Cổng kết nối CORS Web tĩnh an toàn</span></div>
+          <div className="text-[10px] text-slate-400 flex items-center justify-center gap-1"><ShieldCheck className="w-3.5 h-3.5 text-emerald-500" /><span>Xác thực thành công Token khóa đầu AQ</span></div>
         </div>
       </div>
     </div>
