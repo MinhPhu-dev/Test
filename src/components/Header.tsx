@@ -162,102 +162,16 @@ export const Header: React.FC<HeaderProps> = ({
               <div className="text-white font-bold truncate max-w-[120px]">{currentUser.name}</div>
               <div className={`text-[10px] font-mono ${currentRoleCfg.badgeTextCol}`}>{currentRoleCfg.shortTitle}</div>
             </div>
-            <div className="pl-1 text-slate-400 hover:text-white">
-              <LogOut className="w-3.5 h-3.5" />
-            </div>
+            <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
           </div>
 
-          {/* Export app.py */}
+          {/* Logout button icon */}
           <button
-            onClick={onDownloadPython}
-            className="hidden xl:flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-emerald-300 bg-emerald-950/70 border border-emerald-500/40 rounded-xl hover:bg-emerald-900/70 hover:border-emerald-400 transition-colors whitespace-nowrap shadow-sm"
-            title="Tải tệp app.py về máy tính để chạy Streamlit cục bộ"
+            onClick={onLogout}
+            className="p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-rose-400 hover:border-rose-950 hover:bg-rose-950/20 transition-all shadow-sm"
+            title="Đăng xuất khỏi hệ thống"
           >
-            <Download className="w-3.5 h-3.5" />
-            <span>app.py</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Mobile nav bar - Scrollable */}
-      <div className="lg:hidden px-3 py-2 border-t border-slate-800 bg-slate-900/90">
-        <div className="flex overflow-x-auto p-1 bg-slate-950/90 border border-slate-700/80 rounded-xl gap-1 text-xs scrollbar-none shadow-inner">
-          <button
-            onClick={() => setActiveTab('calculator')}
-            className={`px-2.5 py-1.5 rounded-lg border whitespace-nowrap font-medium transition-all ${
-              activeTab === 'calculator' 
-                ? 'bg-emerald-600 border-emerald-400 text-white shadow' 
-                : 'bg-slate-900 border-slate-800 text-slate-200'
-            }`}
-          >
-            1. Tính toán
-          </button>
-          <button
-            onClick={() => setActiveTab('eco')}
-            className={`px-2.5 py-1.5 rounded-lg border whitespace-nowrap font-medium transition-all ${
-              activeTab === 'eco' 
-                ? 'bg-emerald-600 border-emerald-400 text-white shadow' 
-                : 'bg-slate-900 border-slate-800 text-slate-200'
-            }`}
-          >
-            2. Rừng Cần Giờ
-          </button>
-          <button
-            onClick={() => setActiveTab('trading')}
-            className={`px-2.5 py-1.5 rounded-lg border whitespace-nowrap font-medium transition-all flex items-center gap-1 ${
-              activeTab === 'trading' 
-                ? 'bg-emerald-600 border-emerald-400 text-white shadow' 
-                : 'bg-slate-900 border-slate-800 text-slate-200'
-            }`}
-          >
-            {currentUser.role === 'citizen' && <Lock className="w-3 h-3 text-amber-400" />}
-            <span>3. Sàn giao dịch</span>
-          </button>
-          {currentUser.role === 'citizen' && (
-            <button
-              onClick={() => setActiveTab('citizen')}
-              className={`px-2.5 py-1.5 rounded-lg border whitespace-nowrap font-medium transition-all ${
-                activeTab === 'citizen' 
-                  ? 'bg-amber-600 border-amber-400 text-white shadow' 
-                  : 'bg-amber-950/40 border-amber-500/40 text-amber-300'
-              }`}
-            >
-              Cá nhân
-            </button>
-          )}
-          {(currentUser.role === 'forest_authority' || currentUser.role === 'admin') && (
-            <button
-              onClick={() => setActiveTab('forest_authority')}
-              className={`px-2.5 py-1.5 rounded-lg border whitespace-nowrap font-medium transition-all ${
-                activeTab === 'forest_authority' 
-                  ? 'bg-sky-600 border-sky-400 text-white shadow' 
-                  : 'bg-sky-950/40 border-sky-500/40 text-sky-300'
-              }`}
-            >
-              BQL Rừng
-            </button>
-          )}
-          {currentUser.role === 'admin' && (
-            <button
-              onClick={() => setActiveTab('admin')}
-              className={`px-2.5 py-1.5 rounded-lg border whitespace-nowrap font-medium transition-all ${
-                activeTab === 'admin' 
-                  ? 'bg-purple-600 border-purple-400 text-white shadow' 
-                  : 'bg-purple-950/40 border-purple-500/40 text-purple-300'
-              }`}
-            >
-              Admin
-            </button>
-          )}
-          <button
-            onClick={() => setActiveTab('ai')}
-            className={`px-2.5 py-1.5 rounded-lg border whitespace-nowrap font-semibold transition-all ${
-              activeTab === 'ai' 
-                ? 'bg-emerald-500 border-emerald-300 text-slate-950 shadow' 
-                : 'bg-slate-900 border-emerald-500/30 text-emerald-300'
-            }`}
-          >
-            4. Cố vấn AI
+            <LogOut className="w-4 h-4" />
           </button>
         </div>
       </div>
