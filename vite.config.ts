@@ -12,14 +12,15 @@ export default defineConfig(() => {
         '@': path.resolve(__dirname, '.'),
       },
     },
-    // 🌟 ÉP HỆ THỐNG BIÊN DỊCH ĐỊNH DẠNG FILE CHUẨN XÓA BỎ LỖI MIME TYPE TRÊN GITHUB PAGES
+    // 🌟 PHƯƠNG PHÁP ĐẶC TRỊ MIỄN DỊCH VỚI LỖI MIME TYPE TRÊN GITHUB PAGES
     build: {
       cssCodeSplit: false,
       chunkSizeWarningLimit: 3000,
       rollupOptions: {
         output: {
-          entryFileNames: 'assets/[name].js',
-          chunkFileNames: 'assets/[name].js',
+          // ĐỔI ĐUÔI CHUẨN SANG .MJS ĐỂ ÉP TRÌNH DUYỆT ĐỌC ĐÚNG THUỘC TÍNH MODULE SCRIPT, TRIỆT TIÊU 100% LỖI ĐEN MÀN HÌNH
+          entryFileNames: 'assets/[name].mjs',
+          chunkFileNames: 'assets/[name].mjs',
           assetFileNames: 'assets/[name].[ext]'
         }
       }
@@ -33,3 +34,4 @@ export default defineConfig(() => {
     },
   };
 });
+
