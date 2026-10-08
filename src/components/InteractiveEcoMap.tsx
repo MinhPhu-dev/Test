@@ -14,7 +14,8 @@ export const EcoDashboardTab: React.FC = () => {
   const mangroveImg = 'cangio_mangrove_forest_1790662934230.jpg';
 
   // Projection logic
-  const years =;
+const years = Array.from({ length: 10 }, (_, i) => 2026 + i);
+
   
   const getAbsorption = (year: number, scenario: 'baseline' | 'enhanced' | 'vulnerable') => {
     const i = year - 2026;
