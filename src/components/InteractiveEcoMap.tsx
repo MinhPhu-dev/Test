@@ -69,9 +69,22 @@ export const InteractiveEcoMap: React.FC = () => {
                   zone.name === activeZoneName ? 'bg-emerald-500 border-white text-slate-950 scale-105 z-20 shadow-emerald-500/20' : mapLayer === 'biomass' ? 'bg-emerald-950/90 border-emerald-500/40 text-emerald-400 hover:scale-105' : 'bg-sky-950/90 border-sky-500/40 text-sky-400 hover:scale-105'
                 }`}
                 style={{
-                  top: idx === 0 ? '25%' : idx === 1 ? '45%' : idx === 2 ? '65%' : '15%',
-                  left: idx === 0 ? '25%' : idx === 1 ? '40%' : idx === 2 ? '48%' : '52%',
-                }}
+                  top: idx === 0 
+                    ? '38%'  // Vùng lõi nghiêm ngặt đưa vào trung tâm thảm rừng trái
+                    : idx === 1 
+                      ? '20%'  // Phục hồi sinh thái đưa lên thảm rừng phía đông bắc
+                      : idx === 2 
+                         ? '66%'  // Vùng đệm phát triển đưa xuống bán đảo phía nam
+                         : '48%', // Hành lang Sông Lòng Tàu & Soài Rạp hạ xuống đúng dải sông ở giữa
+                  left: idx === 0 
+                    ? '32%' 
+                    : idx === 1 
+                      ? '68%' 
+                      : idx === 2 
+                        ? '42%' 
+                        : '56%',
+}}
+
               >
                 <TreePine className="w-3.5 h-3.5 shrink-0" />
                 <span className="truncate max-w-[90px] sm:max-w-none">{zone.name.replace('Phân khu ', '')}</span>
