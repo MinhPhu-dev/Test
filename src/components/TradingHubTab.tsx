@@ -28,8 +28,8 @@ export const TradingHubTab: React.FC<TradingHubTabProps> = ({
   const [purchaseTimestamp, setPurchaseTimestamp] = useState<string>('');
 
   // Seal image asset
-  const sealImg = `${import.meta.env.BASE_URL}carbon_registry_seal_1790662948000.jpg`; 
-
+  const sealImg = new URL('/carbon_registry_seal_1790662948000.jpg', import.meta.url).href; 
+  
   // Calculate offset quantity
   let offsetTons = results.totalEmissionTon;
   let packageName = 'Gói 1: Bù đắp 100% Phát thải (Net Zero Toàn Diện)';
