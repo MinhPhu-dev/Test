@@ -3,6 +3,8 @@ import {
   TreePine, Waves, Compass, Layers, ShieldCheck, 
   TrendingUp, Info, MapPin, Eye, Workflow
 } from 'lucide-react';
+import { ReverseLogisticsMap } from './ReverseLogisticsMap';
+import { InteractiveEcoMap } from './InteractiveEcoMap'; 
 import { CAN_GIO_ECO_METRICS, CAN_GIO_ZONES } from '../constants/scienceData';
 import { ReverseLogisticsMap } from './ReverseLogisticsMap';
 
@@ -102,7 +104,18 @@ export const EcoDashboardTab: React.FC = () => {
           </p>
         </div>
       </div>
+          <h1 className="text-xl sm:text-3xl font-extrabold text-white tracking-tight">
+            Giám Sát Bể Chứa Sinh Khối & Tín Chỉ Rừng Ngập Mặn Cần Giờ
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-300 mt-2 max-w-3xl leading-relaxed">
+            Hệ sinh thái rừng ngập mặn Cần Giờ lưu giữ carbon xanh (Blue Carbon) với mật độ vượt trội gấp 4–6 lần rừng nhiệt đới trên cạn,
+            nhờ lớp trầm tích bùn yếm khí giữ carbon an toàn qua hàng thế kỷ.
+          </p>
+        </div>
+      </div> {/* 👈 ĐÂY LÀ THẺ ĐÓNG KẾT THÚC KHỐI HERO BANNER RỪNG CẦN GIỜ */}
 
+      {/* 🌟 DÁN KHỐI BẢN ĐỒ VỆ TINH TƯƠNG TÁC THÔNG MINH VÀO ĐÂY: */}
+      <InteractiveEcoMap />
       {/* KPI Stat Cards (4-column grid) */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-slate-800/50 border border-slate-700/60 rounded-xl p-4">
