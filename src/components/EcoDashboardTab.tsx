@@ -100,7 +100,7 @@ export const EcoDashboardTab: React.FC = () => {
             <span className="text-xs text-slate-400 ml-1 font-normal">ha</span>
           </div>
           <div className="text-[11px] text-slate-400 mt-1">
-            Trởn tổng số {CAN_GIO_ECO_METRICS.totalBiosphereAreaHa.toLocaleString()} ha tự nhiên
+            Trên tổng số {CAN_GIO_ECO_METRICS.totalBiosphereAreaHa.toLocaleString()} ha tự nhiên
           </div>
         </div>
 
