@@ -28,8 +28,7 @@ export const TradingHubTab: React.FC<TradingHubTabProps> = ({
   const [purchaseTimestamp, setPurchaseTimestamp] = useState<string>('');
 
   // Seal image asset
-  // Sửa lại thành dòng này (Bắt buộc có dấu gạch chéo / ở đầu tên ảnh)
-const sealImg = '/carbon_registry_seal_1790662948000.jpg';
+  const sealImg = new URL('/carbon_registry_seal_1790662948000.jpg', import.meta.url).href;
   
   // Calculate offset quantity
   let offsetTons = results.totalEmissionTon;
