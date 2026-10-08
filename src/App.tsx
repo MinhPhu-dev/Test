@@ -98,19 +98,6 @@ export default function App() {
     }
   };
 
-  // Download Python app.py
-  const handleDownloadPython = () => {
-    const blob = new Blob([PYTHON_SOURCE_CODE], { type: 'text/x-python;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'app.py';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-  };
-
   // LAYER 1: If user is not yet logged in, show the dedicated 4-Role Login Gateway!
   if (!isLoggedIn) {
     return <LoginGateway onLogin={handleLogin} />;
@@ -123,7 +110,6 @@ export default function App() {
       <Header
         activeTab={activeTab}
         setActiveTab={setActiveTab}
-        onDownloadPython={handleDownloadPython}
         currentUser={currentUser}
         onLogout={() => setIsLoggedIn(false)}
       />
@@ -208,11 +194,6 @@ export default function App() {
             results={results}
             carbonPrice={carbonPrice}
           />
-        )}
-
-        {/* Modal/Tab: Python app.py View */}
-        {activeTab === 'python' && (
-          <PythonSourceModal onDownload={handleDownloadPython} />
         )}
       </main>
 
