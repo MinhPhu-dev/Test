@@ -11,7 +11,6 @@ export type TabType = 'calculator' | 'eco' | 'trading' | 'ai' | 'citizen' | 'for
 interface HeaderProps {
   activeTab: TabType;
   setActiveTab: (tab: TabType) => void;
-  onDownloadPython: () => void;
   currentUser: UserProfile;
   onLogout: () => void;
 }
@@ -19,7 +18,6 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({ 
   activeTab, 
   setActiveTab, 
-  onDownloadPython,
   currentUser,
   onLogout
 }) => {
