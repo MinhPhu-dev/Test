@@ -3,10 +3,8 @@ import {
   TreePine, Waves, Compass, Layers, ShieldCheck, 
   TrendingUp, Info, MapPin, Eye, Workflow
 } from 'lucide-react';
-import { ReverseLogisticsMap } from './ReverseLogisticsMap';
 import { InteractiveEcoMap } from './InteractiveEcoMap'; 
 import { CAN_GIO_ECO_METRICS, CAN_GIO_ZONES } from '../constants/scienceData';
-import { ReverseLogisticsMap } from './ReverseLogisticsMap';
 
 export const EcoDashboardTab: React.FC = () => {
   const [selectedScenario, setSelectedScenario] = useState<'all' | 'baseline' | 'enhanced' | 'vulnerable'>('all');
@@ -16,7 +14,7 @@ export const EcoDashboardTab: React.FC = () => {
   const mangroveImg = 'cangio_mangrove_forest_1790662934230.jpg';
 
   // Projection logic
-  const years = [2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035];
+  const years =;
   
   const getAbsorption = (year: number, scenario: 'baseline' | 'enhanced' | 'vulnerable') => {
     const i = year - 2026;
@@ -30,13 +28,6 @@ export const EcoDashboardTab: React.FC = () => {
   };
 
   const currentYearIdx = forecastYear - 2026;
-  const currentBaseline = getAbsorption(forecastYear, 'baseline');
-  const currentEnhanced = getAbsorption(forecastYear, 'enhanced');
-  const currentVulnerable = getAbsorption(forecastYear, 'vulnerable');
-
-  // Chart max value for scaling
-  const maxVal = 950000;
-  const minVal = 600000;
 
   return (
     <div className="space-y-6">
@@ -49,16 +40,6 @@ export const EcoDashboardTab: React.FC = () => {
           >
             <TreePine className="w-4 h-4 text-emerald-400" />
             <span>1. Sinh Khối & Dự Báo 2026-2035</span>
-          </a>
-          <a
-            href="#reverse-logistics-section"
-            className="flex items-center gap-2 px-3.5 py-1.5 text-xs font-bold rounded-xl border border-emerald-500/50 bg-emerald-950/60 text-emerald-300 hover:bg-emerald-900/60 hover:text-white transition-all shadow-sm"
-          >
-            <Workflow className="w-4 h-4 text-emerald-400" />
-            <span>2. Sơ Đồ Chuỗi Cung Ứng Ngược (Reverse Logistics)</span>
-            <span className="px-1.5 py-0.5 rounded text-[10px] bg-emerald-500/20 text-emerald-300 font-mono border border-emerald-500/30">
-              TRỰC QUAN
-            </span>
           </a>
         </div>
         <div className="text-xs text-slate-300 font-mono hidden lg:flex items-center gap-1.5 pr-2">
@@ -76,7 +57,6 @@ export const EcoDashboardTab: React.FC = () => {
             referrerPolicy="no-referrer"
             className="w-full h-full object-cover object-center filter brightness-90 hover:scale-105 transition-transform duration-700"
             onError={(e) => {
-              // fallback gradient container if image fails
               e.currentTarget.style.display = 'none';
             }}
           />
@@ -104,18 +84,10 @@ export const EcoDashboardTab: React.FC = () => {
           </p>
         </div>
       </div>
-          <h1 className="text-xl sm:text-3xl font-extrabold text-white tracking-tight">
-            Giám Sát Bể Chứa Sinh Khối & Tín Chỉ Rừng Ngập Mặn Cần Giờ
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-300 mt-2 max-w-3xl leading-relaxed">
-            Hệ sinh thái rừng ngập mặn Cần Giờ lưu giữ carbon xanh (Blue Carbon) với mật độ vượt trội gấp 4–6 lần rừng nhiệt đới trên cạn,
-            nhờ lớp trầm tích bùn yếm khí giữ carbon an toàn qua hàng thế kỷ.
-          </p>
-        </div>
-      </div> {/* 👈 ĐÂY LÀ THẺ ĐÓNG KẾT THÚC KHỐI HERO BANNER RỪNG CẦN GIỜ */}
 
-      {/* 🌟 DÁN KHỐI BẢN ĐỒ VỆ TINH TƯƠNG TÁC THÔNG MINH VÀO ĐÂY: */}
+      {/* Lớp Bản đồ không gian vệ tinh tương tác thông minh */}
       <InteractiveEcoMap />
+
       {/* KPI Stat Cards (4-column grid) */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-slate-800/50 border border-slate-700/60 rounded-xl p-4">
@@ -128,7 +100,7 @@ export const EcoDashboardTab: React.FC = () => {
             <span className="text-xs text-slate-400 ml-1 font-normal">ha</span>
           </div>
           <div className="text-[11px] text-slate-400 mt-1">
-            Trên tổng số {CAN_GIO_ECO_METRICS.totalBiosphereAreaHa.toLocaleString()} ha tự nhiên
+            Trởn tổng số {CAN_GIO_ECO_METRICS.totalBiosphereAreaHa.toLocaleString()} ha tự nhiên
           </div>
         </div>
 
@@ -174,294 +146,88 @@ export const EcoDashboardTab: React.FC = () => {
           </div>
         </div>
       </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left: Carbon Pools Breakdown (5 cols) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mt-6">
+        {/* Left: Carbon Pools Breakdown */}
         <div className="lg:col-span-5 space-y-5">
           <div className="bg-slate-800/50 border border-slate-700/60 rounded-xl p-5 space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-700/60">
-              <h2 className="text-sm font-semibold text-white flex items-center gap-2">
-                <Layers className="w-4 h-4 text-emerald-400" />
-                <span>Cấu Trúc Bể Chứa Carbon (Carbon Pools)</span>
-              </h2>
-              <span className="text-[11px] text-slate-400 font-mono">Blue Carbon</span>
-            </div>
-
-            <div className="space-y-3.5">
-              <div>
-                <div className="flex justify-between items-center text-xs mb-1">
-                  <span className="text-slate-200 font-medium">Trầm tích hữu cơ xanh (Soil Organic Carbon)</span>
-                  <span className="text-emerald-400 font-bold font-mono">62.5% · ~11.16M tCO2</span>
-                </div>
-                <div className="w-full h-3 bg-slate-900 rounded-full overflow-hidden">
-                  <div className="bg-emerald-500 h-full rounded-full" style={{ width: '62.5%' }}></div>
-                </div>
-                <p className="text-[11px] text-slate-400 mt-1">
-                  Lớp bùn yếm khí sâu 1-3m, lưu trữ carbon lâu dài không bị phân hủy hiếu khí.
-                </p>
-              </div>
-
-              <div>
-                <div className="flex justify-between items-center text-xs mb-1">
-                  <span className="text-slate-200 font-medium">Sinh khối trên mặt đất (AGB - Thân, Cành, Lá)</span>
-                  <span className="text-teal-400 font-bold font-mono">23.0% · ~4.11M tCO2</span>
-                </div>
-                <div className="w-full h-3 bg-slate-900 rounded-full overflow-hidden">
-                  <div className="bg-teal-500 h-full rounded-full" style={{ width: '23.0%' }}></div>
-                </div>
-                <p className="text-[11px] text-slate-400 mt-1">
-                  Rừng Đước đôi, Mấm trắng và Bần với mật độ tán dày đặc qua hơn 45 năm phục hồi.
-                </p>
-              </div>
-
-              <div>
-                <div className="flex justify-between items-center text-xs mb-1">
-                  <span className="text-slate-200 font-medium">Sinh khối rễ ngập triều (BGB - Rễ chống/thở)</span>
-                  <span className="text-blue-400 font-bold font-mono">11.5% · ~2.05M tCO2</span>
-                </div>
-                <div className="w-full h-3 bg-slate-900 rounded-full overflow-hidden">
-                  <div className="bg-blue-500 h-full rounded-full" style={{ width: '11.5%' }}></div>
-                </div>
-                <p className="text-[11px] text-slate-400 mt-1">
-                  Mạng lưới rễ chống chân nôm đan xen giữ phù sa và bẫy vật chất hữu cơ trôi nổi.
-                </p>
-              </div>
-
-              <div>
-                <div className="flex justify-between items-center text-xs mb-1">
-                  <span className="text-slate-200 font-medium">Vật rơi rụng & Gỗ mục (Litter & Deadwood)</span>
-                  <span className="text-slate-400 font-bold font-mono">3.0% · ~0.53M tCO2</span>
-                </div>
-                <div className="w-full h-3 bg-slate-900 rounded-full overflow-hidden">
-                  <div className="bg-slate-500 h-full rounded-full" style={{ width: '3.0%' }}></div>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-3 bg-emerald-950/30 border border-emerald-500/20 rounded-lg text-xs text-emerald-300 leading-relaxed">
-              <span className="font-semibold">💡 Ý nghĩa Kinh tế tuần hoàn:</span> Rừng Cần Giờ là bể ngấm carbon (Carbon Sink) đóng vai trò trung tâm tạo nguồn tín chỉ bù trừ cho các trung tâm phát thải công nghiệp lớn tại TP.HCM và vùng kinh tế trọng điểm phía Nam.
-            </div>
-          </div>
-        </div>
-
-        {/* Right: Multi-scenario Forecast Interactive Simulator (7 cols) */}
-        <div className="lg:col-span-7 space-y-5">
-          <div className="bg-slate-800/50 border border-slate-700/60 rounded-xl p-5 space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-700/60">
-              <div>
-                <h2 className="text-sm font-semibold text-white flex items-center gap-2">
-                  <TrendingUp className="w-4 h-4 text-emerald-400" />
-                  <span>Dự Báo Năng Lực Hấp Thụ CO2 (Giai đoạn 2026 - 2035)</span>
-                </h2>
-                <p className="text-xs text-slate-400 mt-0.5">
-                  Mô phỏng 3 kịch bản can thiệp lâm sinh & quản lý rừng ngập mặn
-                </p>
-              </div>
-
-              <div className="flex items-center gap-1 bg-slate-900 p-1 rounded-lg border border-slate-700 text-xs">
-                <button
-                  onClick={() => setSelectedScenario('all')}
-                  className={`px-2.5 py-1 rounded transition-colors ${selectedScenario === 'all' ? 'bg-emerald-600 text-white font-medium' : 'text-slate-400 hover:text-white'}`}
-                >
-                  Tất cả
-                </button>
-                <button
-                  onClick={() => setSelectedScenario('baseline')}
-                  className={`px-2.5 py-1 rounded transition-colors ${selectedScenario === 'baseline' ? 'bg-blue-600 text-white font-medium' : 'text-slate-400 hover:text-white'}`}
-                >
-                  Chuẩn
-                </button>
-                <button
-                  onClick={() => setSelectedScenario('enhanced')}
-                  className={`px-2.5 py-1 rounded transition-colors ${selectedScenario === 'enhanced' ? 'bg-emerald-600 text-white font-medium' : 'text-slate-400 hover:text-white'}`}
-                >
-                  Phục hồi
-                </button>
-                <button
-                  onClick={() => setSelectedScenario('vulnerable')}
-                  className={`px-2.5 py-1 rounded transition-colors ${selectedScenario === 'vulnerable' ? 'bg-rose-600 text-white font-medium' : 'text-slate-400 hover:text-white'}`}
-                >
-                  Rủi ro BĐKH
-                </button>
-              </div>
-            </div>
-
-            {/* Interactive SVG Projection Chart */}
-            <div className="space-y-2">
-              <div className="h-60 w-full relative">
-                <svg className="w-full h-full overflow-visible" viewBox="0 0 500 200" preserveAspectRatio="none">
-                  {/* Grid Lines */}
-                  {[0, 50, 100, 150, 200].map((y) => (
-                    <line key={y} x1="0" y1={y} x2="500" y2={y} stroke="#334155" strokeWidth="0.8" strokeDasharray="3 3" />
-                  ))}
-
-                  {/* Kịch bản 1: Baseline (Blue) */}
-                  {(selectedScenario === 'all' || selectedScenario === 'baseline') && (
-                    <polyline
-                      fill="none"
-                      stroke="#38bdf8"
-                      strokeWidth="2.5"
-                      points={years
-                        .map((yr, idx) => {
-                          const x = (idx / (years.length - 1)) * 500;
-                          const val = getAbsorption(yr, 'baseline');
-                          const y = 200 - ((val - minVal) / (maxVal - minVal)) * 200;
-                          return `${x},${y}`;
-                        })
-                        .join(' ')}
-                    />
-                  )}
-
-                  {/* Kịch bản 2: Enhanced (Emerald) */}
-                  {(selectedScenario === 'all' || selectedScenario === 'enhanced') && (
-                    <polyline
-                      fill="none"
-                      stroke="#10b981"
-                      strokeWidth="2.5"
-                      points={years
-                        .map((yr, idx) => {
-                          const x = (idx / (years.length - 1)) * 500;
-                          const val = getAbsorption(yr, 'enhanced');
-                          const y = 200 - ((val - minVal) / (maxVal - minVal)) * 200;
-                          return `${x},${y}`;
-                        })
-                        .join(' ')}
-                    />
-                  )}
-
-                  {/* Kịch bản 3: Vulnerable (Rose) */}
-                  {(selectedScenario === 'all' || selectedScenario === 'vulnerable') && (
-                    <polyline
-                      fill="none"
-                      stroke="#f43f5e"
-                      strokeWidth="2.5"
-                      strokeDasharray="4 2"
-                      points={years
-                        .map((yr, idx) => {
-                          const x = (idx / (years.length - 1)) * 500;
-                          const val = getAbsorption(yr, 'vulnerable');
-                          const y = 200 - ((val - minVal) / (maxVal - minVal)) * 200;
-                          return `${x},${y}`;
-                        })
-                        .join(' ')}
-                    />
-                  )}
-
-                  {/* Year marker line */}
-                  <line
-                    x1={(currentYearIdx / (years.length - 1)) * 500}
-                    y1="0"
-                    x2={(currentYearIdx / (years.length - 1)) * 500}
-                    y2="200"
-                    stroke="#fbbf24"
-                    strokeWidth="1.5"
-                  />
-                </svg>
-              </div>
-
-              {/* X Axis Labels */}
-              <div className="flex justify-between text-[11px] text-slate-400 font-mono pt-1">
-                {years.map((y) => (
-                  <span 
-                    key={y} 
-                    onClick={() => setForecastYear(y)}
-                    className={`cursor-pointer transition-colors ${forecastYear === y ? 'text-amber-400 font-bold' : 'hover:text-white'}`}
-                  >
-                    {y}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            {/* Year Inspector details */}
-            <div className="bg-slate-900/80 rounded-lg p-3.5 border border-slate-700/60">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-semibold text-slate-300">
-                  Dự báo chỉ số hấp thụ tại mốc năm <b className="text-amber-400 font-mono">{forecastYear}</b>:
-                </span>
-                <span className="text-[11px] text-slate-400">Kéo thanh chọn mốc:</span>
-              </div>
-
-              <input
-                type="range"
-                min="2026"
-                max="2035"
-                step="1"
-                value={forecastYear}
-                onChange={(e) => setForecastYear(Number(e.target.value))}
-                className="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-amber-400 mb-3"
-              />
-
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs">
-                <div className="bg-slate-800/80 p-2.5 rounded border-l-2 border-blue-400">
-                  <div className="text-slate-400 text-[11px]">1. Hiện trạng (Baseline)</div>
-                  <div className="text-white font-mono font-bold text-sm mt-0.5">
-                    {currentBaseline.toLocaleString('vi-VN', { maximumFractionDigits: 0 })} tCO2
-                  </div>
-                </div>
-
-                <div className="bg-slate-800/80 p-2.5 rounded border-l-2 border-emerald-400">
-                  <div className="text-slate-400 text-[11px]">2. Phục hồi tăng cường</div>
-                  <div className="text-emerald-400 font-mono font-bold text-sm mt-0.5">
-                    {currentEnhanced.toLocaleString('vi-VN', { maximumFractionDigits: 0 })} tCO2
-                  </div>
-                </div>
-
-                <div className="bg-slate-800/80 p-2.5 rounded border-l-2 border-rose-400">
-                  <div className="text-slate-400 text-[11px]">3. Rủi ro BĐKH & Xâm thực</div>
-                  <div className="text-rose-400 font-mono font-bold text-sm mt-0.5">
-                    {currentVulnerable.toLocaleString('vi-VN', { maximumFractionDigits: 0 })} tCO2
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Can Gio Subzone Ecological Table */}
-      <div className="bg-slate-800/50 border border-slate-700/60 rounded-xl p-5">
-        <div className="flex items-center justify-between pb-3 border-b border-slate-700/60 mb-4">
-          <div>
-            <h3 className="text-sm font-semibold text-white">
-              Phân Bố Không Gian Sinh Thái & Mật Độ Trữ Lượng Carbon Rừng Cần Giờ
+            <h3 className="text-sm font-bold text-white flex items-center gap-2 pb-2 border-b border-slate-800">
+              <Layers className="w-4 h-4 text-emerald-400" />
+              <span>Phân Bổ Chỉ Số Hấp Thụ Thực Địa</span>
             </h3>
-            <p className="text-xs text-slate-400 mt-0.5">
-              Căn cứ bản đồ quy hoạch rừng phòng hộ và số liệu đo đạc sinh khối lâm học
-            </p>
-          </div>
-          <span className="text-xs text-slate-400 font-mono">4 Phân khu trọng điểm</span>
-        </div>
-
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
-            <thead>
-              <tr className="border-b border-slate-700 text-slate-400 uppercase tracking-wider text-[11px]">
-                <th className="py-2.5 pr-4 font-semibold">Phân Khu Sinh Thái</th>
-                <th className="py-2.5 px-4 font-semibold text-right">Diện Tích (ha)</th>
-                <th className="py-2.5 px-4 font-semibold">Quần Xã Thực Vật Chủ Đạo</th>
-                <th className="py-2.5 px-4 font-semibold text-right">Mật Độ Carbon (tCO2/ha)</th>
-                <th className="py-2.5 pl-4 font-semibold">Đặc Tính Sinh Thái</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-800 font-mono">
-              {CAN_GIO_ZONES.map((zone, idx) => (
-                <tr key={idx} className="hover:bg-slate-800/40 transition-colors">
-                  <td className="py-3 pr-4 font-sans font-medium text-white">{zone.name}</td>
-                  <td className="py-3 px-4 text-right text-emerald-400 font-bold">{zone.areaHa.toLocaleString('vi-VN')} ha</td>
-                  <td className="py-3 px-4 font-sans text-slate-300">{zone.dominantSpecies}</td>
-                  <td className="py-3 px-4 text-right text-teal-300 font-bold">{zone.carbonDensityTonPerHa}</td>
-                  <td className="py-3 pl-4 font-sans text-slate-400 text-[11px]">{zone.description}</td>
-                </tr>
+            <div className="space-y-3">
+              {CAN_GIO_ZONES.map((zone) => (
+                <div key={zone.name} className="p-3 bg-slate-950 border border-slate-800 rounded-xl space-y-1">
+                  <div className="flex justify-between text-xs font-bold text-white">
+                    <span>{zone.name}</span>
+                    <span className="font-mono text-emerald-400">{zone.areaHa.toLocaleString('vi-VN')} ha</span>
+                  </div>
+                  <div className="flex justify-between text-[11px] text-slate-400">
+                    <span>Loài cây: {zone.dominantSpecies}</span>
+                    <span>{zone.carbonDensityTonPerHa} t/ha</span>
+                  </div>
+                  <p className="text-[11px] text-slate-500 italic mt-1">"{zone.description}"</p>
+                </div>
               ))}
-            </tbody>
-          </table>
+            </div>
+          </div>
         </div>
-      </div>
 
-      {/* SƠ ĐỒ CHUỖI CUNG ỨNG NGƯỢC & DÒNG TIỀN BẢO TỒN TUẦN HOÀN */}
-      <div id="reverse-logistics-section" className="scroll-mt-20">
-        <ReverseLogisticsMap />
+        {/* Right: Simulation Forecast Chart */}
+        <div className="lg:col-span-7 bg-slate-800/50 border border-slate-700/60 rounded-xl p-5 flex flex-col justify-between">
+          <div className="space-y-4">
+            <h3 className="text-sm font-bold text-white flex items-center gap-2 pb-2 border-b border-slate-800">
+              <TrendingUp className="w-4 h-4 text-sky-400" />
+              <span>Dự Báo Mô Phỏng Hấp Thụ 10 Năm (2026 - 2035)</span>
+            </h3>
+            
+            <div className="flex gap-2">
+              {(['all', 'baseline', 'enhanced', 'vulnerable'] as const).map((scen) => (
+                <button
+                  key={scen}
+                  onClick={() => setSelectedScenario(scen)}
+                  className={`px-3 py-1 text-[11px] font-bold rounded-lg border transition-all ${
+                    selectedScenario === scen
+                      ? 'bg-slate-950 border-emerald-500 text-emerald-400'
+                      : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-white'
+                  }`}
+                >
+                  {scen === 'all' ? 'Tất cả' : scen === 'baseline' ? 'Hiện trạng' : scen === 'enhanced' ? 'Tăng cường' : 'Rủi ro khí hậu'}
+                </button>
+              ))}
+            </div>
+
+            {/* Simulated Chart Matrix Graphic */}
+            <div className="h-48 bg-slate-950 rounded-xl border border-slate-800/80 p-4 flex items-end gap-1 relative overflow-hidden shadow-inner mt-4">
+              <div className="absolute top-2 right-3 flex items-center gap-3 text-[10px] font-mono text-slate-500">
+                <span>Năm dự báo: {forecastYear}</span>
+                <span>Hấp thụ: {Math.round(getAbsorption(forecastYear, selectedScenario === 'all' ? 'enhanced' : selectedScenario)).toLocaleString()} tCO2</span>
+              </div>
+              
+              {years.map((y) => {
+                const baseH = ((getAbsorption(y, 'baseline') - 600000) / 350000) * 100;
+                const enhH = ((getAbsorption(y, 'enhanced') - 600000) / 350000) * 100;
+                const vulH = ((getAbsorption(y, 'vulnerable') - 600000) / 350000) * 100;
+
+                return (
+                  <div key={y} className="flex-1 h-full flex flex-col justify-end items-center gap-1 group/bar cursor-pointer" onClick={() => setForecastYear(y)}>
+                    <div className="w-full flex items-end gap-0.5 h-full px-1">
+                      {(selectedScenario === 'all' || selectedScenario === 'baseline') && (
+                        <div className="flex-1 bg-sky-500/40 border border-sky-400/30 rounded-t group-hover/bar:bg-sky-400 transition-colors" style={{ height: `${Math.max(10, baseH)}%` }} />
+                      )}
+                      {(selectedScenario === 'all' || selectedScenario === 'enhanced') && (
+                        <div className="flex-1 bg-emerald-500/40 border border-emerald-400/30 rounded-t group-hover/bar:bg-emerald-400 transition-colors" style={{ height: `${Math.max(10, enhH)}%` }} />
+                      )}
+                      {(selectedScenario === 'all' || selectedScenario === 'vulnerable') && (
+                        <div className="flex-1 bg-rose-500/40 border border-rose-400/30 rounded-t group-hover/bar:bg-rose-400 transition-colors" style={{ height: `${Math.max(10, vulH)}%` }} />
+                      )}
+                    </div>
+                    <span className="text-[10px] font-mono text-slate-500 mt-1">{y}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
