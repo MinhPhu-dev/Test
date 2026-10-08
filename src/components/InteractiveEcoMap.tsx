@@ -54,11 +54,11 @@ export const InteractiveEcoMap: React.FC = () => {
           
           {/* RENDER SƠ ĐỒ MÔ PHỎNG VỊ TRÍ HÌNH HỌC */}
           <div className="absolute inset-0 z-0 w-full h-full bg-slate-950">
-            {/* 🌟 HÌNH NỀN VỆ TINH THỰC TẾ CHỤP RỪNG NGẬP MẶN CẦN GIỜ TỪ TRÊN CAO */}
+                       {/* 🌟 HÌNH NỀN VỆ TINH THỰC TẾ CHỤP RỪNG NGẬP MẶN CẦN GIỜ TỪ TRÊN CAO */}
             <img 
               src="https://unsplash.com" 
               alt="Can Gio Mangrove Forest Satellite View"
-              className="absolute inset-0 w-full h-full object-cover filter brightness-75 contrast-125 saturate-100"
+              className="absolute inset-0 w-full h-full object-cover filter brightness-[0.45] contrast-[1.15] saturate-[0.85]"
               onError={(e) => {
                 e.currentTarget.style.display = 'none';
               }}
