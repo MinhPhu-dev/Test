@@ -15,20 +15,15 @@ interface AIConsultantTabProps {
   carbonPrice: number;
 }
 
-// Đổi tên model nếu tài khoản của bạn không dùng được model này
-const MODEL = 'gemini-2.5-flash';
-
 const nowLabel = () =>
   new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
 
-// Khóa bắt đầu bằng "AQ." là khóa Vertex AI express mode, dùng endpoint aiplatform.
-// Khóa "AIza..." (Google AI Studio) dùng endpoint generativelanguage.
-const buildUrl = (apiKey: string) =>
-  apiKey.startsWith('AQ.')
-    ? `https://aiplatform.googleapis.com/v1/publishers/google/models/${MODEL}:generateContent?key=${apiKey}`
-    : `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${apiKey}`;
+const fmt = (n: number, digits = 1) =>
+  n.toLocaleString('vi-VN', { minimumFractionDigits: digits, maximumFractionDigits: digits });
 
-// Hiển thị **chữ đậm** trong câu trả lời của AI
+const fmtInt = (n: number) => n.toLocaleString('vi-VN', { maximumFractionDigits: 0 });
+
+// Hiển thị **chữ đậm** trong câu trả lời
 const renderText = (text: string) =>
   text.split(/(\*\*[^*]+\*\*)/g).map((part, i) =>
     part.startsWith('**') && part.endsWith('**') ? (
@@ -38,100 +33,126 @@ const renderText = (text: string) =>
     )
   );
 
+const includesAny = (text: string, keywords: string[]) => keywords.some(k => text.includes(k));
+
 export const AIConsultantTab: React.FC<AIConsultantTabProps> = ({ inputs, results, carbonPrice }) => {
+  const company = inputs.companyName || 'doanh nghiệp';
+
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 'welcome',
       role: 'assistant',
-      content: `Xin chào! Tôi là **Trợ lý Cố vấn AI CarbonLens**. Tôi đã đồng bộ hồ sơ phát thải của **${inputs.companyName || 'doanh nghiệp'}** (hiện trạng: **${results.totalEmissionTon.toFixed(2)} tấn CO2e**).\n\nHãy đặt câu hỏi bên dưới để tôi tư vấn chiến lược cắt giảm phát thải Scope 1 & 2 và lộ trình mua tín chỉ Blue Carbon rừng Cần Giờ.`,
+      content: `Xin chào! Tôi là **Trợ lý Cố vấn CarbonLens**. Tôi đang dùng hồ sơ phát thải của **${company}** (hiện trạng: **${fmt(results.totalEmissionTon, 2)} tấn CO2e**).\n\nHãy chọn một câu hỏi gợi ý hoặc tự đặt câu hỏi về cắt giảm Scope 1 & 2, tín chỉ Blue Carbon Cần Giờ và ngân sách Net Zero.`,
       timestamp: nowLabel(),
     },
   ]);
   const [inputQuestion, setInputQuestion] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const suggestedQuestions = [
-    `Đánh giá mức phát thải ${results.totalEmissionTon.toFixed(1)} tCO2 và đề xuất giải pháp giảm nhanh Scope 1 & 2?`,
+    `Đánh giá mức phát thải ${fmt(results.totalEmissionTon)} tCO2 và đề xuất giải pháp giảm nhanh Scope 1 & 2?`,
     'Tại sao Blue Carbon rừng ngập mặn Cần Giờ hấp thụ carbon tốt hơn rừng trên cạn?',
     `Với giá tín chỉ $${carbonPrice}/tCO2, nên lập ngân sách Net Zero thế nào cho 5 năm tới?`,
+    'Cơ chế retire tín chỉ chống tính trùng hoạt động ra sao?',
   ];
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, isLoading, errorMsg]);
+  }, [messages, isLoading]);
+
+  // Trả lời theo quy tắc, dùng số liệu kiểm kê hiện tại. Không gọi dịch vụ bên ngoài.
+  const buildReply = (question: string): string => {
+    const q = question.toLowerCase();
+    const total = results.totalEmissionTon;
+    const s1 = results.totalScope1Ton;
+    const s2 = results.totalScope2Ton;
+    const s1Pct = total > 0 ? (s1 / total) * 100 : 0;
+    const s2Pct = total > 0 ? (s2 / total) * 100 : 0;
+
+    if (includesAny(q, ['retire', 'retirement', 'tính trùng', 'double counting', 'chống'])) {
+      return (
+        `**Cơ chế retire chống tính trùng:**\n\n` +
+        `- Mỗi tín chỉ có mã định danh duy nhất trên sổ cái.\n` +
+        `- Khi doanh nghiệp bù đắp, tín chỉ được retire: khóa vĩnh viễn và không thể bán lại.\n` +
+        `- Chứng nhận ghi rõ đơn vị, khối lượng, thời điểm và mã lô để kiểm toán đối chiếu.`
+      );
+    }
+
+    if (includesAny(q, ['giải pháp', 'giảm', 'đánh giá', 'mức phát thải'])) {
+      if (total <= 0) {
+        return 'Hiện chưa có dữ liệu phát thải. Hãy nhập mức tiêu thụ điện, xăng, dầu ở tab Kiểm kê để tôi đánh giá.';
+      }
+      const biggest = s2 >= s1 ? 'Scope 2 (điện lưới)' : 'Scope 1 (xăng, dầu)';
+      return (
+        `**Đánh giá phát thải của ${company}:**\n\n` +
+        `Tổng phát thải **${fmt(total, 2)} tCO2e**: Scope 1 chiếm ${fmt(s1Pct)}%, Scope 2 chiếm ${fmt(s2Pct)}%. ` +
+        `Nguồn lớn nhất là **${biggest}**. Chi phí bù đắp ước tính **$${fmtInt(results.offsetCostUSD)}**.\n\n` +
+        `Ba hướng giảm, ưu tiên theo nguồn lớn nhất:\n\n` +
+        `1. **Scope 2:** lắp điện mặt trời mái nhà, có thể giảm khoảng 30-40% điện mua từ lưới (mức tham khảo).\n` +
+        `2. **Scope 1:** tối ưu tuyến vận chuyển và điện hóa dần đội xe nội bộ.\n` +
+        `3. **Bù đắp:** mua tín chỉ Blue Carbon Cần Giờ cho phần còn lại chưa giảm được.`
+      );
+    }
+
+    if (includesAny(q, ['ngân sách', 'esg', 'giá tín chỉ', '5 năm', 'net zero'])) {
+      if (total <= 0) {
+        return 'Hiện chưa có dữ liệu phát thải để lập ngân sách. Hãy nhập dữ liệu ở tab Kiểm kê trước.';
+      }
+      // Giả định minh họa: giảm 8% mỗi năm nhờ đầu tư tiết kiệm năng lượng, giá carbon giữ nguyên
+      const rate = 0.08;
+      const rows: string[] = [];
+      let sum = 0;
+      for (let y = 1; y <= 5; y++) {
+        const e = total * Math.pow(1 - rate, y - 1);
+        const cost = e * carbonPrice;
+        sum += cost;
+        rows.push(`- Năm ${y}: ${fmt(e)} tCO2e, bù đắp ~$${fmtInt(cost)}`);
+      }
+      return (
+        `**Ngân sách bù đắp 5 năm (giá $${carbonPrice}/tCO2, kịch bản minh họa):**\n\n` +
+        `Giả định phát thải giảm ${rate * 100}% mỗi năm và giá tín chỉ không đổi:\n\n` +
+        `${rows.join('\n')}\n\n` +
+        `Tổng khoảng **$${fmtInt(sum)}**, so với **$${fmtInt(results.offsetCostUSD * 5)}** nếu không giảm gì. ` +
+        `Đây chỉ là mô phỏng, không phải dự báo giá thị trường.`
+      );
+    }
+
+    if (includesAny(q, ['blue carbon', 'hấp thụ', 'rừng', 'cần giờ', 'gấp'])) {
+      return (
+        `**Vì sao rừng ngập mặn Cần Giờ lưu giữ carbon tốt:**\n\n` +
+        `- **Trầm tích thiếu oxy:** carbon trong bùn ngập triều phân hủy rất chậm, nên phần lớn carbon nằm dưới lớp đất chứ không phải trên cây.\n` +
+        `- **Hệ rễ dày:** rễ Đước, Mấm giữ lại phù sa hữu cơ từ sông Soài Rạp và Lòng Tàu.\n` +
+        `- **Khí hậu nhiệt đới:** cây tích lũy sinh khối quanh năm.\n\n` +
+        `Muốn con số cụ thể (ha, tCO2/ha/năm) thì xem tab Rừng Cần Giờ, vì số liệu do BQL rừng cập nhật.`
+      );
+    }
+
+    return (
+      `Bạn hỏi về: *“${question}”*.\n\n` +
+      `Với dữ liệu của ${company} (**${fmt(total, 2)} tCO2e**), bạn có thể thử các câu hỏi gợi ý bên phải ` +
+      `về giảm phát thải, ngân sách Net Zero, Blue Carbon Cần Giờ hoặc cơ chế retire tín chỉ.`
+    );
+  };
 
   const handleSendMessage = async (textToSend?: string) => {
     const question = (textToSend ?? inputQuestion).trim();
     if (!question || isLoading) return;
 
-    const userMessage: Message = {
-      id: `u-${Date.now()}`,
-      role: 'user',
-      content: question,
-      timestamp: nowLabel(),
-    };
-
-    // Lịch sử gửi cho AI: bỏ lời chào, giữ các lượt hỏi - đáp trước đó để AI hiểu ngữ cảnh
-    const history = messages
-      .filter(m => m.id !== 'welcome')
-      .map(m => ({
-        role: m.role === 'user' ? 'user' : 'model',
-        parts: [{ text: m.content }],
-      }));
-
-    setMessages(prev => [...prev, userMessage]);
+    setMessages(prev => [
+      ...prev,
+      { id: `u-${Date.now()}`, role: 'user', content: question, timestamp: nowLabel() },
+    ]);
     setInputQuestion('');
     setIsLoading(true);
-    setErrorMsg(null);
 
     try {
-      const apiKey = import.meta.env.VITE_GEMINI_API_KEY as string | undefined;
-      if (!apiKey) {
-        throw new Error('Chưa có VITE_GEMINI_API_KEY trong file .env (sau khi sửa .env phải chạy lại npm run dev).');
-      }
-
-      const systemPrompt =
-        `Bạn là chuyên gia tư vấn carbon của nền tảng CarbonLens. ` +
-        `Dữ liệu doanh nghiệp: ${inputs.companyName || 'Đối tác'}; ` +
-        `Scope 1: ${results.totalScope1Ton.toFixed(2)} tCO2; ` +
-        `Scope 2: ${results.totalScope2Ton.toFixed(2)} tCO2; ` +
-        `tổng phát thải: ${results.totalEmissionTon.toFixed(2)} tCO2e; ` +
-        `giá carbon: $${carbonPrice}/tCO2. ` +
-        `Trả lời bằng tiếng Việt, ngắn gọn, dùng **chữ đậm** cho ý chính. Không bịa số liệu ngoài dữ liệu đã cho.`;
-
-      const res = await fetch(buildUrl(apiKey), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          systemInstruction: { parts: [{ text: systemPrompt }] },
-          contents: [...history, { role: 'user', parts: [{ text: question }] }],
-        }),
-      });
-
-      if (!res.ok) {
-        const detail = await res.text(); // Google trả lý do cụ thể: key sai, model không có, hết quota...
-        throw new Error(`API lỗi ${res.status}: ${detail.slice(0, 300)}`);
-      }
-
-      const data = await res.json();
-      const aiReply: string =
-        data.candidates?.[0]?.content?.parts?.map((p: { text?: string }) => p.text ?? '').join('') ||
-        'Mô hình chưa trả về nội dung, vui lòng thử lại.';
-
+      await new Promise(resolve => setTimeout(resolve, 500)); // chờ ngắn cho tự nhiên
+      const reply = buildReply(question);
       setMessages(prev => [
         ...prev,
-        { id: `a-${Date.now()}`, role: 'assistant', content: aiReply, timestamp: nowLabel() },
+        { id: `a-${Date.now()}`, role: 'assistant', content: reply, timestamp: nowLabel() },
       ]);
-    } catch (err: any) {
-      console.error(err);
-      const isNetwork = err instanceof TypeError; // "Failed to fetch" thuộc loại này
-      setErrorMsg(
-        isNetwork
-          ? 'Không gửi được request. Kiểm tra mạng, VPN hoặc tiện ích chặn quảng cáo, rồi mở F12 > Network để xem chi tiết.'
-          : err.message || 'Không kết nối được tới máy chủ AI.'
-      );
     } finally {
       setIsLoading(false);
     }
@@ -146,7 +167,9 @@ export const AIConsultantTab: React.FC<AIConsultantTabProps> = ({ inputs, result
             <Bot className="w-5 h-5 text-emerald-400" />
             <span className="text-sm font-bold text-white">Tư vấn chiến lược Net Zero</span>
           </div>
-          {isLoading && <span className="text-xs text-emerald-400 animate-pulse">AI đang trả lời...</span>}
+          <span className="text-[11px] text-slate-500">
+            {isLoading ? 'Đang soạn câu trả lời...' : 'Trả lời theo quy tắc, không dùng AI bên ngoài'}
+          </span>
         </div>
 
         <div className="flex-1 p-4 overflow-y-auto space-y-4 bg-slate-950/40">
@@ -180,12 +203,6 @@ export const AIConsultantTab: React.FC<AIConsultantTabProps> = ({ inputs, result
               </div>
             </div>
           ))}
-
-          {errorMsg && (
-            <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs text-center font-medium break-words">
-              {errorMsg}
-            </div>
-          )}
           <div ref={messagesEndRef} />
         </div>
 
@@ -198,7 +215,7 @@ export const AIConsultantTab: React.FC<AIConsultantTabProps> = ({ inputs, result
               // Không gửi khi đang gõ dấu tiếng Việt (Telex/VNI)
               if (e.key === 'Enter' && !e.nativeEvent.isComposing) handleSendMessage();
             }}
-            placeholder="Đặt câu hỏi về phát thải, kinh tế tuần hoàn, tín chỉ Cần Giờ..."
+            placeholder="Đặt câu hỏi về phát thải, tín chỉ Cần Giờ, ngân sách Net Zero..."
             className="flex-1 bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-emerald-500/50 disabled:opacity-60"
             disabled={isLoading}
           />
@@ -219,22 +236,22 @@ export const AIConsultantTab: React.FC<AIConsultantTabProps> = ({ inputs, result
           <div className="border-b border-slate-800 pb-2">
             <h4 className="text-sm font-bold text-white flex items-center gap-1.5">
               <Sparkles className="w-4 h-4 text-emerald-400" />
-              <span>Dữ liệu đang gửi cho AI</span>
+              <span>Dữ liệu đang dùng để trả lời</span>
             </h4>
           </div>
 
           <div className="space-y-2 text-xs font-mono">
             <div className="flex justify-between p-2 rounded-lg bg-slate-900/50 border border-slate-800">
               <span className="text-slate-400">Scope 1 (xăng + dầu):</span>
-              <span className="text-rose-400 font-bold">{results.totalScope1Ton.toFixed(2)} tCO2</span>
+              <span className="text-rose-400 font-bold">{fmt(results.totalScope1Ton, 2)} tCO2</span>
             </div>
             <div className="flex justify-between p-2 rounded-lg bg-slate-900/50 border border-slate-800">
               <span className="text-slate-400">Scope 2 (điện lưới):</span>
-              <span className="text-amber-400 font-bold">{results.totalScope2Ton.toFixed(2)} tCO2</span>
+              <span className="text-amber-400 font-bold">{fmt(results.totalScope2Ton, 2)} tCO2</span>
             </div>
             <div className="flex justify-between p-2 rounded-lg bg-slate-900 border border-slate-700">
               <span className="text-slate-300 font-bold">Tổng phát thải:</span>
-              <span className="text-sky-400 font-black">{results.totalEmissionTon.toFixed(2)} tCO2e</span>
+              <span className="text-sky-400 font-black">{fmt(results.totalEmissionTon, 2)} tCO2e</span>
             </div>
           </div>
 
@@ -259,7 +276,7 @@ export const AIConsultantTab: React.FC<AIConsultantTabProps> = ({ inputs, result
         <div className="mt-4 bg-emerald-950/20 border border-emerald-500/20 rounded-xl p-3 text-center space-y-1">
           <div className="text-xl font-bold text-emerald-400 font-mono">
             {'$'}
-            {results.offsetCostUSD.toLocaleString('vi-VN')}
+            {fmtInt(results.offsetCostUSD)}
           </div>
           <div className="text-[10px] text-slate-400 flex items-center justify-center gap-1">
             <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
