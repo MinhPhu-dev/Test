@@ -39,10 +39,10 @@ export const InteractiveEcoMap: React.FC = () => {
           <div className="absolute inset-0 z-0 w-full h-full bg-slate-950">
             {/* HÌNH NỀN VỆ TINH THỰC TẾ CHỤP RỪNG NGẬP MẶN CẦN GIỜ TỪ TRÊN CAO */}
             <img 
-              src="https://unsplash.com" 
+              src="https://imgur.com" 
               alt="Can Gio Mangrove Forest"
-              className="absolute inset-0 w-full h-full object-cover filter brightness-[0.45] contrast-[1.15] saturate-[0.85]"
-              onError={(e) => { e.currentTarget.style.display = 'none'; }}
+              className="absolute inset-0 w-full h-full object-cover opacity-50 mix-blend-lighten filter brightness-110 contrast-125 saturate-100"
+              onError={(e) => { e.currentTarget.style.transform = 'scale(0)'; }}
             />
 
             <div className="absolute inset-0 opacity-10 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:24px_24px]" />
