@@ -5,22 +5,22 @@ import {defineConfig} from 'vite';
 
 export default defineConfig(() => {
   return {
-    base: '/Test/',
+    // 🌟 ĐẶC TRỊ LỖI 404 & MIME TYPE: ĐỔI SANG ĐƯỜNG DẪN TƯƠNG ĐỐI TỰ ĐỘNG KHÔNG LO LỆCH KÝ TỰ REPO
+    base: './',
     plugins: [react(), tailwindcss()],
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),
       },
     },
-    // 🌟 PHƯƠNG PHÁP ĐẶC TRỊ KHÓA LỖI MIME TYPE: ĐÓNG GÓI ĐỊNH DẠNG TÊN FILE TĨNH TIÊU CHUẨN
     build: {
       cssCodeSplit: false,
       chunkSizeWarningLimit: 3000,
       minify: 'esbuild',
-      assetsInlineLimit: 4096, // Các file nhỏ tự động gộp thẳng vào code để tránh lỗi fetch asset
+      assetsInlineLimit: 4096,
       rollupOptions: {
         output: {
-          // Ép xuất file đuôi .js truyền thống nhưng loại bỏ các ký tự băm [hash] kẹt cache CDN
+          // Ép xuất file tên cố định để GitHub Pages không bị kẹt cache CDN
           entryFileNames: 'assets/main.js',
           chunkFileNames: 'assets/[name].js',
           assetFileNames: 'assets/[name].[ext]'
