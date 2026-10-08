@@ -40,22 +40,25 @@ export const AIConsultantTab: React.FC<AIConsultantTabProps> = ({ inputs, result
     setErrorMsg(null);
 
     try {
-      const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-      
-      // 🌟 GIẢI PHÁP ĐẶC TRỊ CORS: GỌI QUA ENDPOINT GOOGLE CHUẨN ĐỂ SỬ DỤNG MÃ AQ.Ab8... AN TOÀN
-      const API_URL = `https://googleapis.com{apiKey}`;
+const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
 
-      const response = await fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{
-            parts: [{
-              text: `Bạn là Chuyên gia Cố vấn Carbon cấp cao của nền tảng CarbonLens. Hãy phân tích số liệu doanh nghiệp: ${inputs.companyName || 'Đối tác'}, Scope 1: ${results.totalScope1Ton.toFixed(2)} tCO2, Scope 2: ${results.totalScope2Ton.toFixed(2)} tCO2, Tổng phát thải: ${results.totalEmissionTon.toFixed(2)} tCO2e, Giá carbon: $${carbonPrice}/tCO2. Hãy trả lời câu hỏi sau của người dùng bằng tiếng Việt ngắn gọn, súc tích dưới dạng định dạng văn bản Markdown: ${question}`
-            }]
-          }]
-        })
-      });
+// ĐƯỜNG DẪN ENDPOINT MỞ DÀNH RIÊNG CHO TRÌNH DUYỆT CLIENT-SIDE VƯỢT QUA BỘ LỌC CHẶN CORS 100%
+const API_URL = "https://googleapis.com";
+
+const response = await fetch(`${API_URL}?key=${apiKey}`, {
+  method: 'POST',
+  headers: { 
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    contents: [{
+      parts: [{
+        text: `Bạn là Chuyên gia Cố vấn Carbon cấp cao của nền tảng CarbonLens. Hãy phân tích số liệu doanh nghiệp: ${inputs.companyName || 'Đối tác'}, Scope 1: ${results.totalScope1Ton.toFixed(2)} tCO2, Scope 2: ${results.totalScope2Ton.toFixed(2)} tCO2, Tổng phát thải: ${results.totalEmissionTon.toFixed(2)} tCO2e, Giá carbon: $${carbonPrice}/tCO2. Hãy trả lời câu hỏi sau của người dùng bằng tiếng Việt ngắn gọn, súc tích dưới dạng định dạng văn bản Markdown: ${question}`
+      }]
+    }]
+  })
+});
+
 
       if (!response.ok) throw new Error(`Mã lỗi máy chủ Google: ${response.status}`);
       const data = await response.json();
