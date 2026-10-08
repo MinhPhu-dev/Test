@@ -11,7 +11,7 @@ export const EcoDashboardTab: React.FC = () => {
   const [forecastYear, setForecastYear] = useState<number>(2030);
 
   // Mangrove image asset
-  const mangroveImg = '/src/assets/images/cangio_mangrove_forest_1790662934230.jpg';
+  const mangroveImg = 'src/assets/images/cangio_mangrove_forest_1790662934230.jpg';
 
   // Projection logic
   const years = [2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035];
