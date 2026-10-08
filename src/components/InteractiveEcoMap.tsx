@@ -49,29 +49,35 @@ export const InteractiveEcoMap: React.FC = () => {
           </button>
         </div>
       </div>
-
-      {/* Thân bản đồ chính */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
         {/* Khối hiển thị Bản đồ Địa lý động (7 cột) */}
         <div className="lg:col-span-7 relative bg-slate-950 rounded-xl overflow-hidden border border-slate-800 h-80 lg:h-96">
           
           {/* RENDER SƠ ĐỒ MÔ PHỎNG VỊ TRÍ HÌNH HỌC */}
           <div className="absolute inset-0 z-0 w-full h-full bg-slate-950">
-            {/* Nền lưới tọa độ */}
-            <div className="absolute inset-0 opacity-20 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:24px_24px]" />
+            {/* 🌟 HÌNH NỀN VỆ TINH THỰC TẾ CHỤP RỪNG NGẬP MẶN CẦN GIỜ TỪ TRÊN CAO */}
+            <img 
+              src="https://unsplash.com" 
+              alt="Can Gio Mangrove Forest Satellite View"
+              className="absolute inset-0 w-full h-full object-cover filter brightness-75 contrast-125 saturate-100"
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+              }}
+            />
+
+            {/* Nền lưới tọa độ viễn thám mờ nhẹ đè lên ảnh vệ tinh */}
+            <div className="absolute inset-0 opacity-10 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:24px_24px]" />
             
-            {/* Các nhánh sông */}
-            <div className="absolute top-[20%] left-[20%] w-[60%] h-[5px] bg-gradient-to-r from-sky-600 via-teal-500 to-transparent blur-[1px] transform rotate-12" />
-            <div className="absolute top-[40%] left-[30%] w-[50%] h-[7px] bg-gradient-to-r from-blue-600 via-sky-500 to-transparent blur-[1px] transform -rotate-12" />
-            
-            {/* Các lớp màu phủ tầng sinh quyển khi lọc dữ liệu */}
-            <div className={`absolute inset-0 transition-opacity duration-500 pointer-events-none ${mapLayer === 'biomass' ? 'opacity-30' : 'opacity-0'}`}>
-              <div className="absolute top-[25%] left-[35%] w-32 h-32 rounded-full bg-emerald-500 blur-3xl" />
-              <div className="absolute top-[40%] left-[50%] w-40 h-40 rounded-full bg-green-500 blur-3xl" />
+            {/* Các nhánh sông phát sáng định hình dòng chảy */}
+            <div className="absolute top-[25%] left-[20%] w-[60%] h-[4px] bg-gradient-to-r from-sky-500/60 via-teal-400/50 to-transparent blur-[1px] transform rotate-12 pointer-events-none" />
+            <div className="absolute top-[45%] left-[30%] w-[50%] h-[5px] bg-gradient-to-r from-blue-500/60 via-sky-400/50 to-transparent blur-[1px] transform -rotate-12 pointer-events-none" />
+            {/* Các lớp màu phủ tầng sinh quyển phát sáng khi lọc dữ liệu */}
+            <div className={`absolute inset-0 transition-opacity duration-500 pointer-events-none ${mapLayer === 'biomass' ? 'opacity-40' : 'opacity-0'}`}>
+              <div className="absolute top-[25%] left-[35%] w-32 h-32 rounded-full bg-emerald-500/60 blur-3xl" />
+              <div className="absolute top-[40%] left-[50%] w-40 h-40 rounded-full bg-green-500/60 blur-3xl" />
             </div>
-            <div className={`absolute inset-0 transition-opacity duration-500 pointer-events-none ${mapLayer === 'absorption' ? 'opacity-25' : 'opacity-0'}`}>
-              <div className="absolute top-[25%] left-[35%] w-36 h-36 rounded-full bg-sky-500 blur-3xl" />
-              <div className="absolute top-[45%] left-[45%] w-32 h-32 rounded-full bg-blue-500 blur-3xl" />
+            <div className={`absolute inset-0 transition-opacity duration-500 pointer-events-none ${mapLayer === 'absorption' ? 'opacity-35' : 'opacity-0'}`}>
+              <div className="absolute top-[25%] left-[35%] w-36 h-36 rounded-full bg-sky-500/60 blur-3xl" />
+              <div className="absolute top-[45%] left-[45%] w-32 h-32 rounded-full bg-blue-500/60 blur-3xl" />
             </div>
 
             {/* Khớp nối 4 phân khu dữ liệu thực tế */}
