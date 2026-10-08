@@ -5,7 +5,7 @@ import {defineConfig} from 'vite';
 
 export default defineConfig(() => {
   return {
-    // 🌟 ĐẶC TRỊ LỖI 404 & MIME TYPE: ĐỔI SANG ĐƯỜNG DẪN TƯƠNG ĐỐI TỰ ĐỘNG KHÔNG LO LỆCH KÝ TỰ REPO
+    // 🌟 SỬ DỤNG ĐƯỜNG DẪN TƯƠNG ĐỐI ĐỂ KHÔNG BỊ PHÂN BIỆT CHỮ HOA / CHỮ THƯỜNG TRÊN LINK REPO
     base: './',
     plugins: [react(), tailwindcss()],
     resolve: {
@@ -20,9 +20,9 @@ export default defineConfig(() => {
       assetsInlineLimit: 4096,
       rollupOptions: {
         output: {
-          // Ép xuất file tên cố định để GitHub Pages không bị kẹt cache CDN
-          entryFileNames: 'assets/main.js',
-          chunkFileNames: 'assets/[name].js',
+          // 🌟 GIẢI PHÁP ĐẶC TRỊ LỖI MIME: CHUYỂN ĐUÔI SANG .MJS ĐỂ ÉP GITHUB PAGES ĐỌC ĐÚNG THUỘC TÍNH SCRIPT CHUẨN
+          entryFileNames: 'assets/[name].mjs',
+          chunkFileNames: 'assets/[name].mjs',
           assetFileNames: 'assets/[name].[ext]'
         }
       }
