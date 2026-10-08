@@ -38,11 +38,14 @@ export const InteractiveEcoMap: React.FC = () => {
         <div className="lg:col-span-7 relative bg-slate-950 rounded-xl overflow-hidden border border-slate-800 h-80 lg:h-96">
           <div className="absolute inset-0 z-0 w-full h-full bg-slate-950">
             {/* HÌNH NỀN VỆ TINH THỰC TẾ CHỤP RỪNG NGẬP MẶN CẦN GIỜ TỪ TRÊN CAO */}
+                        {/* 🌟 HÌNH NỀN VỆ TINH THỰC TẾ CHỤP RỪNG NGẬP MẶN CẦN GIỜ TỪ TRÊN CAO */}
             <img 
-              src="https://imgur.com" 
-              alt="Can Gio Mangrove Forest"
-              className="absolute inset-0 w-full h-full object-cover opacity-50 mix-blend-lighten filter brightness-110 contrast-125 saturate-100"
-              onError={(e) => { e.currentTarget.style.transform = 'scale(0)'; }}
+              src={`${import.meta.env.BASE_URL}cangio_satellite_map.jpg`} 
+              alt="Can Gio Mangrove Forest Satellite View"
+              className="absolute inset-0 w-full h-full object-cover opacity-80 filter brightness-95 contrast-105 saturate-100"
+              onError={(e) => {
+                e.currentTarget.style.transform = 'scale(0)';
+              }}
             />
 
             <div className="absolute inset-0 opacity-10 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:24px_24px]" />
