@@ -107,6 +107,41 @@ Hãy nhập câu hỏi bên dưới hoặc chọn các câu hỏi gợi ý nhanh
       const data = await response.json();
       const aiReply = data.reply || 'Xin lỗi, không có phản hồi từ mô hình AI.';
 
+    const newMessages = [...messages, userMessage];
+    setMessages(newMessages);
+    setInputQuestion('');
+    setIsLoading(true);
+    setErrorMsg(null);
+
+    try {
+      // 🌟 NẠP BẢO MẬT API KEY TỪ BIẾN MÔI TRƯỜNG GITHUB CỦA BẠN
+      const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+      
+      // ĐƯỜNG DẪN ENDPOINT CHUẨN CỦA GOOGLE AGENT ĐỂ KHỚP VỚI MÃ AQ.Ab8...
+      const API_URL = "https://googleapis.com";
+
+      // Gọi trực tiếp đến Google AI Studio thay vì gọi qua cổng nội bộ /api/chat bị lỗi
+      const response = await fetch(`${API_URL}?key=${apiKey}`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'x-goog-api-key': apiKey || '' // Ép tiêu đề bảo mật xác thực của Google Agent
+        },
+        body: JSON.stringify({
+          prompt: {
+            text: `Bạn là Chuyên gia Cố vấn Carbon cấp cao của CarbonLens. Hãy phân tích hồ sơ phát thải của doanh nghiệp ${inputs.companyName || 'đối tác'} với số liệu: Scope 1 (Xăng/Dầu) là ${results.totalScope1Ton.toFixed(2)} tCO2, Scope 2 (Điện lưới) là ${results.totalScope2Ton.toFixed(2)} tCO2, Tổng phát thải ${results.totalEmissionTon.toFixed(2)} tCO2e, chi phí bù đắp ước tính là $${results.offsetCostUSD.toFixed(0)} với giá tín chỉ carbon công khai là $${carbonPrice}/tCO2. Hãy trả lời câu hỏi sau của người dùng bằng ngôn ngữ Tiếng Việt chuẩn định dạng Markdown ngắn gọn, súc tích: ${question}`
+          }
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`Mã lỗi từ máy chủ Google: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      // Bóc tách cấu trúc dữ liệu trả về linh hoạt theo chuẩn phản hồi Tác nhân Google Agent
+      const aiReply = data.interaction?.output_text || data.candidates?.[0]?.content?.parts?.[0]?.text || 'Mô hình Tác nhân AI đang bận xử lý chuỗi sinh khối, vui lòng gửi lại câu hỏi sau giây lát.';
       setMessages(prev => [
         ...prev,
         {
@@ -118,7 +153,7 @@ Hãy nhập câu hỏi bên dưới hoặc chọn các câu hỏi gợi ý nhanh
       ]);
     } catch (err: any) {
       console.error('Chat error:', err);
-      setErrorMsg(err.message || 'Không thể kết nối với AI. Vui lòng thử lại.');
+      setErrorMsg(err.message || 'Không thể kết nối với máy chủ Google AI Studio. Vui lòng kiểm tra lại khóa.');
     } finally {
       setIsLoading(false);
     }
