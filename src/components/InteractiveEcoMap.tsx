@@ -3,15 +3,12 @@ import { TreePine, Layers, Eye, ShieldCheck, Info } from 'lucide-react';
 import { CAN_GIO_ZONES } from '../constants/scienceData';
 
 export const InteractiveEcoMap: React.FC = () => {
-  // Mặc định chọn phân khu đầu tiên trong danh sách dữ liệu thực tế của bạn
+  // Mặc định chọn phân khu đầu tiên trong danh sách dữ liệu thực tế
   const [activeZoneName, setActiveZoneName] = useState<string>(CAN_GIO_ZONES[0].name);
   const [mapLayer, setMapLayer] = useState<'satellite' | 'biomass' | 'absorption'>('biomass');
 
   const selectedZone = CAN_GIO_ZONES.find(z => z.name === activeZoneName) || CAN_GIO_ZONES[0];
-  
-  // Phân giải phép tính biểu thức số an toàn
-  const currentArea = selectedZone.areaHa;
-  const simulatedAbsorption = currentArea * 18.5;
+  const simulatedAbsorption = selectedZone.areaHa * 18.5;
 
   return (
     <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4 shadow-xl">
@@ -29,48 +26,29 @@ export const InteractiveEcoMap: React.FC = () => {
 
         {/* Chuyển đổi lớp bản đồ */}
         <div className="flex items-center gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800 shrink-0">
-          <button
-            onClick={() => setMapLayer('satellite')}
-            className={`px-2.5 py-1 text-[10px] font-bold rounded-lg transition-all ${mapLayer === 'satellite' ? 'bg-slate-800 text-white border border-slate-700' : 'text-slate-400 hover:text-white'}`}
-          >
-            Vệ tinh tự nhiên
-          </button>
-          <button
-            onClick={() => setMapLayer('biomass')}
-            className={`px-2.5 py-1 text-[10px] font-bold rounded-lg transition-all ${mapLayer === 'biomass' ? 'bg-emerald-950 border border-emerald-500/30 text-emerald-400' : 'text-slate-400 hover:text-white'}`}
-          >
-            Mật độ sinh khối
-          </button>
-          <button
-            onClick={() => setMapLayer('absorption')}
-            className={`px-2.5 py-1 text-[10px] font-bold rounded-lg transition-all ${mapLayer === 'absorption' ? 'bg-sky-950 border border-sky-500/30 text-sky-400' : 'text-slate-400 hover:text-white'}`}
-          >
-            Hấp thụ tCO2
-          </button>
+          <button onClick={() => setMapLayer('satellite')} className={`px-2.5 py-1 text-[10px] font-bold rounded-lg transition-all ${mapLayer === 'satellite' ? 'bg-slate-800 text-white border border-slate-700' : 'text-slate-400 hover:text-white'}`}>Vệ tinh tự nhiên</button>
+          <button onClick={() => setMapLayer('biomass')} className={`px-2.5 py-1 text-[10px] font-bold rounded-lg transition-all ${mapLayer === 'biomass' ? 'bg-emerald-950 border border-emerald-500/30 text-emerald-400' : 'text-slate-400 hover:text-white'}`}>Mật độ sinh khối</button>
+          <button onClick={() => setMapLayer('absorption')} className={`px-2.5 py-1 text-[10px] font-bold rounded-lg transition-all ${mapLayer === 'absorption' ? 'bg-sky-950 border border-sky-500/30 text-sky-400' : 'text-slate-400 hover:text-white'}`}>Hấp thụ tCO2</button>
         </div>
       </div>
+
+      {/* Thân bản đồ chính */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
         {/* Khối hiển thị Bản đồ Địa lý động (7 cột) */}
         <div className="lg:col-span-7 relative bg-slate-950 rounded-xl overflow-hidden border border-slate-800 h-80 lg:h-96">
-          
-          {/* RENDER SƠ ĐỒ MÔ PHỎNG VỊ TRÍ HÌNH HỌC */}
           <div className="absolute inset-0 z-0 w-full h-full bg-slate-950">
-                       {/* 🌟 HÌNH NỀN VỆ TINH THỰC TẾ CHỤP RỪNG NGẬP MẶN CẦN GIỜ TỪ TRÊN CAO */}
+            {/* HÌNH NỀN VỆ TINH THỰC TẾ CHỤP RỪNG NGẬP MẶN CẦN GIỜ TỪ TRÊN CAO */}
             <img 
               src="https://unsplash.com" 
-              alt="Can Gio Mangrove Forest Satellite View"
+              alt="Can Gio Mangrove Forest"
               className="absolute inset-0 w-full h-full object-cover filter brightness-[0.45] contrast-[1.15] saturate-[0.85]"
-              onError={(e) => {
-                e.currentTarget.style.display = 'none';
-              }}
+              onError={(e) => { e.currentTarget.style.display = 'none'; }}
             />
 
-            {/* Nền lưới tọa độ viễn thám mờ nhẹ đè lên ảnh vệ tinh */}
             <div className="absolute inset-0 opacity-10 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:24px_24px]" />
-            
-            {/* Các nhánh sông phát sáng định hình dòng chảy */}
             <div className="absolute top-[25%] left-[20%] w-[60%] h-[4px] bg-gradient-to-r from-sky-500/60 via-teal-400/50 to-transparent blur-[1px] transform rotate-12 pointer-events-none" />
             <div className="absolute top-[45%] left-[30%] w-[50%] h-[5px] bg-gradient-to-r from-blue-500/60 via-sky-400/50 to-transparent blur-[1px] transform -rotate-12 pointer-events-none" />
-            {/* Các lớp màu phủ tầng sinh quyển phát sáng khi lọc dữ liệu */}
+            
             <div className={`absolute inset-0 transition-opacity duration-500 pointer-events-none ${mapLayer === 'biomass' ? 'opacity-40' : 'opacity-0'}`}>
               <div className="absolute top-[25%] left-[35%] w-32 h-32 rounded-full bg-emerald-500/60 blur-3xl" />
               <div className="absolute top-[40%] left-[50%] w-40 h-40 rounded-full bg-green-500/60 blur-3xl" />
@@ -80,17 +58,12 @@ export const InteractiveEcoMap: React.FC = () => {
               <div className="absolute top-[45%] left-[45%] w-32 h-32 rounded-full bg-blue-500/60 blur-3xl" />
             </div>
 
-            {/* Khớp nối 4 phân khu dữ liệu thực tế */}
             {CAN_GIO_ZONES.map((zone, idx) => (
               <button
                 key={zone.name}
                 onClick={() => setActiveZoneName(zone.name)}
                 className={`absolute transition-all duration-300 p-2 rounded-xl border shadow-xl flex items-center gap-1.5 group/pin text-[11px] font-bold ${
-                  zone.name === activeZoneName
-                    ? 'bg-emerald-500 border-white text-slate-950 scale-105 z-20 shadow-emerald-500/20'
-                    : mapLayer === 'biomass'
-                      ? 'bg-emerald-950/90 border-emerald-500/40 text-emerald-400 hover:scale-105'
-                      : 'bg-sky-950/90 border-sky-500/40 text-sky-400 hover:scale-105'
+                  zone.name === activeZoneName ? 'bg-emerald-500 border-white text-slate-950 scale-105 z-20 shadow-emerald-500/20' : mapLayer === 'biomass' ? 'bg-emerald-950/90 border-emerald-500/40 text-emerald-400 hover:scale-105' : 'bg-sky-950/90 border-sky-500/40 text-sky-400 hover:scale-105'
                 }`}
                 style={{
                   top: idx === 0 ? '25%' : idx === 1 ? '45%' : idx === 2 ? '65%' : '15%',
@@ -98,9 +71,7 @@ export const InteractiveEcoMap: React.FC = () => {
                 }}
               >
                 <TreePine className="w-3.5 h-3.5 shrink-0" />
-                <span className="truncate max-w-[90px] sm:max-w-none">
-                  {zone.name.replace('Phân khu ', '')}
-                </span>
+                <span className="truncate max-w-[90px] sm:max-w-none">{zone.name.replace('Phân khu ', '')}</span>
               </button>
             ))}
           </div>
@@ -113,8 +84,7 @@ export const InteractiveEcoMap: React.FC = () => {
               </div>
             ) : mapLayer === 'satellite' ? (
               <div className="text-slate-300 italic text-[11px] flex items-center gap-1">
-                <Eye className="w-3.5 h-3.5 text-slate-400" />
-                Kênh viễn thám thực tế RGB
+                <Eye className="w-3.5 h-3.5 text-slate-400" /> Kênh viễn thám thực tế RGB
               </div>
             ) : (
               <div className="space-y-1 font-medium text-[11px]">
@@ -129,9 +99,7 @@ export const InteractiveEcoMap: React.FC = () => {
         <div className="lg:col-span-5 bg-slate-950 border border-slate-800/80 rounded-xl p-4 flex flex-col justify-between space-y-4 shadow-inner">
           <div className="space-y-3">
             <div className="border-b border-slate-800 pb-2">
-              <span className="text-[9px] px-2 py-0.5 rounded-md font-mono border font-bold bg-emerald-500/10 border-emerald-500/20 text-emerald-400">
-                Hệ Sinh Thái Blue Carbon
-              </span>
+              <span className="text-[9px] px-2 py-0.5 rounded-md font-mono border font-bold bg-emerald-500/10 border-emerald-500/20 text-emerald-400">Hệ Sinh Thái Blue Carbon</span>
               <h4 className="text-sm font-bold text-white mt-1.5 tracking-tight leading-tight">{selectedZone.name}</h4>
               <p className="text-[11px] text-slate-400 mt-1.5 italic leading-relaxed">"{selectedZone.description}"</p>
             </div>
@@ -148,31 +116,15 @@ export const InteractiveEcoMap: React.FC = () => {
             </div>
 
             <div className="p-3 bg-slate-900/30 border border-slate-800 rounded-xl space-y-2">
-              <div className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-300">
-                <Info className="w-3.5 h-3.5 text-sky-400" />
-                <span>Thành phần quần thể thực vật</span>
-              </div>
-              <div className="space-y-1.5 text-xs">
-                <div className="flex flex-col gap-1 text-slate-400">
-                  <span>Loài cây ưu thế vùng ngập triều:</span>
-                  <span className="text-white font-medium pl-2 border-l-2 border-slate-800 leading-relaxed">
-                    {selectedZone.dominantSpecies}
-                  </span>
-                </div>
-              </div>
+              <div className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-300"><Info className="w-3.5 h-3.5 text-sky-400" /><span>Thành phần quần thể thực vật</span></div>
+              <div className="text-xs text-white font-medium leading-relaxed italic">{selectedZone.dominantSpecies}</div>
             </div>
           </div>
 
           <div className="bg-emerald-950/20 border border-emerald-500/20 rounded-xl p-3.5 text-center space-y-0.5 shadow-sm">
             <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider block">Năng suất hấp thụ phân khu ước tính</span>
-            <div className="text-xl font-black text-emerald-400 font-mono tracking-tight tabular-nums">
-              {Math.round(simulatedAbsorption).toLocaleString('vi-VN')}
-              <span className="text-xs text-slate-300 font-sans font-normal ml-1">tCO2e/năm</span>
-            </div>
-            <div className="flex items-center justify-center gap-1 text-[10px] text-emerald-500 font-medium">
-              <ShieldCheck className="w-3.5 h-3.5" />
-              <span>Khấu trừ biên độ an toàn chuẩn quốc tế</span>
-            </div>
+            <div className="text-xl font-black text-emerald-400 font-mono tracking-tight tabular-nums">{Math.round(simulatedAbsorption).toLocaleString('vi-VN')}<span className="text-xs text-slate-300 font-sans font-normal ml-1">tCO2e/năm</span></div>
+            <div className="flex items-center justify-center gap-1 text-[10px] text-emerald-500 font-medium"><ShieldCheck className="w-3.5 h-3.5" /><span>Khấu trừ biên độ an toàn chuẩn quốc tế</span></div>
           </div>
         </div>
       </div>
