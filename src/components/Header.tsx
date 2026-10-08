@@ -101,7 +101,6 @@ export const Header: React.FC<HeaderProps> = ({
             >
               <User className="w-3.5 h-3.5 text-amber-300" />
               <span>Dấu chân cá nhân</span>
-              <span className="text-[9px] px-1 py-0.2 rounded bg-amber-400 text-slate-950 font-extrabold">MỚI</span>
             </button>
           )}
 
